@@ -161,7 +161,7 @@ public class HistoryManager implements IHistoryManager<PlotHistory> {
 					polygon.switchClose(false);
 					break;
 				case PlotHistory.TYPE_POLYGON_SIMPLIFY:
-					// TODO: 2018/11/26
+					// TODO: 2018/11/26 回退
 					break;
 			}
 			focusVertex = vertices.contains(focusVertex) ? focusVertex : null;

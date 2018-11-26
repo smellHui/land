@@ -153,6 +153,9 @@ public class Handle implements IHandle {
 			Log.e(TAG, "请勿操作已销毁的把手！");
 			return;
 		}
+		if (isDirty()) {
+			return;
+		}
 		setDirty(true);
 		parent.invalidate();
 	}

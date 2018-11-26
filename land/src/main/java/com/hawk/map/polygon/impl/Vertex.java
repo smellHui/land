@@ -398,6 +398,9 @@ public class Vertex implements IVertex {
 			}
 			return;
 		}
+		if (isDirty()) {
+			return;
+		}
 		setDirty(true);
 		parent.invalidate();
 	}
