@@ -86,6 +86,16 @@ public class HistoryManager implements IHistoryManager<PlotHistory> {
 			@Override
 			public void afterPolygonClose(Polygone polygon) {
 			}
+
+			@Override
+			public void beforePolygonSimplify(Polygone polygon) {
+				PlotHistory history = new PlotHistory(polygon.getVertices().get(0), -1, PlotHistory.TYPE_POLYGON_SIMPLIFY);
+				push(history);
+			}
+
+			@Override
+			public void afterPolygonSimplify(Polygone polygone) {
+			}
 		});
 	}
 
@@ -149,6 +159,9 @@ public class HistoryManager implements IHistoryManager<PlotHistory> {
 					break;
 				case PlotHistory.TYPE_POLYGON_CLOSE:
 					polygon.switchClose(false);
+					break;
+				case PlotHistory.TYPE_POLYGON_SIMPLIFY:
+					// TODO: 2018/11/26
 					break;
 			}
 			focusVertex = vertices.contains(focusVertex) ? focusVertex : null;

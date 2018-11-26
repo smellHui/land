@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.amap.api.maps.AMap;
+import com.hawk.map.core.IMapFunctions;
 import com.hawk.map.impl.AmapView;
 import com.hawk.map.impl.MapManager;
 import com.hawk.map.polygon.PlotUtils;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mMapView.onCreate(savedInstanceState);
 		final PolygonPlotter polygonPlotter = new PolygonPlotter(this);
 		MapManager mapManager = mMapView.getMapManager();
+		IMapFunctions mapFunctions = mapManager.getMapFunctions();
+		mapFunctions.setMapType(AMap.MAP_TYPE_SATELLITE);
 		mapManager.addObserver(polygonPlotter);
 		mapManager.addObserver(new SimpleMapMarkerClickObserver());
 		polygonPlotter.setOnPlotListener(new OnPlotListener() {
@@ -56,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				// 只允许添加一个多边形
 				polygonPlotter.setPolygonAddable(!polygon.isClosed());
 				changeButtonsEnable(polygon);
-
 			}
 
 			@Override
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				mFocusedPolygon.switchFocusVertex(nextVertex);
 				break;
 			case R.id.btnCompress:
-				mFocusedPolygon.compress(PlotUtils.dp2px(this, 15));
+				mFocusedPolygon.simplify(PlotUtils.dp2px(this, 20));
 				break;
 		}
 	}

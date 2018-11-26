@@ -29,4 +29,8 @@ public interface IPolygonHook {
 	void beforePolygonClose(Polygone polygon);
 
 	void afterPolygonClose(Polygone polygon);
+
+	void beforePolygonSimplify(Polygone polygon);
+
+	void afterPolygonSimplify(Polygone polygon);
 }

@@ -12,7 +12,7 @@ import com.hawk.map.polygon.TouchType;
 import com.hawk.map.polygon.impl.Vertex;
 import com.hawk.map.polygon.vo.VertexStyle;
 
-public interface IVertex {
+public interface IVertex extends Cloneable {
 	/**
 	 * 普通顶点
 	 */
@@ -287,4 +287,10 @@ public interface IVertex {
 	 * @return 把手是否显示，true 显示，false 未显示
 	 */
 	boolean requestShowHandle();
+
+	/**
+	 * 克隆
+	 * @return 克隆的对象
+	 */
+	IVertex clone();
 }

@@ -117,10 +117,13 @@ public class Polygone implements IPolygon {
 	}
 
 	@Override
-	public void setPositions(List<LatLng> points, boolean isClosed) {
+	public void setPositions(List<LatLng> positions, boolean isClosed) {
+		for (IVertex vertex : vertices) {
+			vertex.destroy();
+		}
 		vertices.clear();
 		focusedVertex = null;
-		for (LatLng point : points) {
+		for (LatLng point : positions) {
 			IVertex nextNormalVtx = plotterFactory.createVertex(IVertex.TYPE_NORMAL, this);
 			nextNormalVtx.setPosition(point);
 			if (vertices.size() > 0) {
@@ -129,7 +132,7 @@ public class Polygone implements IPolygon {
 			}
 			addVertex(vertices.size(), nextNormalVtx);
 		}
-		isClosed = isClosed && points.size() > 3;
+		isClosed = isClosed && positions.size() > 3;
 		if (isClosed) {
 			addMiddleVertex(vertices.getLast(), vertices.getFirst());
 		}
@@ -382,7 +385,7 @@ public class Polygone implements IPolygon {
 	@Override
 	public void setClosed(boolean closed) {
 		if (isClosed() != closed) {
-			if (vertices.size() < 5) {
+			if (vertices.size() < 5 && closed) {
 				throw new RuntimeException("多边形无法闭合：顶点数不可小于三！");
 			}
 			if (closed) {
@@ -684,10 +687,9 @@ public class Polygone implements IPolygon {
 	public boolean isHandleVisible() {
 		return handleVisible &&
 				isTouchable() &&
-				isFocused() &&
 				isEditable() &&
 				isVisible() &&
-				focusedVertex != null &&
+				getFocusedVertex() != null &&
 				parent.isHandleVisible();
 	}
 
@@ -716,11 +718,63 @@ public class Polygone implements IPolygon {
 	}
 
 	@Override
-	public void compress(double tolerance) {
-		List<Integer> keepIndices = PlotUtils.compress(getPoints(), tolerance);
-		// TODO: 2018/11/26
-		setDirty(DirtyFlags.POSITION);
-		invalidate();
+	public void simplify(double tolerance) {
+		List<Point> points = getPoints();
+		if (points.size() < 1) {
+			return;
+		}
+		boolean closed = isClosed();
+		List<Point> simplifyPoints = JtsHelper.getInstance().simplify(points, tolerance);
+		if (simplifyPoints.size() == points.size()) {
+			return;
+		}
+		for (IPolygonHook hook : polygonHooks) {
+			hook.beforePolygonSimplify(this);
+		}
+		List<Integer> keepIndices = new ArrayList<>();
+		for (int i = 0; i < simplifyPoints.size(); i++) {
+			Point point = simplifyPoints.get(i);
+			if (points.contains(point)) {
+				keepIndices.add(i);
+			}
+		}
+		List<IVertex> normalVertices = getNormalVertices();
+		for (int i = 0; i < normalVertices.size(); i++) {
+			if (!keepIndices.contains(i)) {
+				IVertex vertex = normalVertices.get(i);
+				Pair<IVertex, IVertex> siblings = vertex.getSiblings();
+				removeVertex(vertex);
+				if (siblings.second != null) {
+					removeVertex(siblings.second);
+				}
+			}
+		}
+		for (IVertex vertex : vertices) {
+			if (vertex.getType() == IVertex.TYPE_MIDDLE) {
+				Pair<IVertex, IVertex> siblings = vertex.getSiblings();
+				if (siblings.first != null && siblings.second != null) {
+					LatLng midPos = PlotUtils.getMiddlePosition(siblings.first, siblings.second, getMapFunctions().getProjection());
+					vertex.setPosition(midPos);
+				}
+			}
+		}
+		if (!isClosed()) {
+			IVertex lastVertex = vertices.getLast();
+			if (lastVertex.getType() == IVertex.TYPE_MIDDLE) {
+				lastVertex.destroy();
+				vertices.remove(lastVertex);
+			}
+		}
+		if (vertices.size() < 6 && closed) {
+			switchClose(false);
+		}
+		for (IPolygonHook hook : polygonHooks) {
+			hook.afterPolygonSimplify(this);
+		}
+		handle.invalidate();
+
+		// FIXME: 2018/11/26 支持回退
+		historyManager.clear();
 	}
 
 	@Override
@@ -752,6 +806,16 @@ public class Polygone implements IPolygon {
 			}
 		}
 		mDirtyFlag = 0;
+	}
+
+	private List<IVertex> getNormalVertices() {
+		ArrayList<IVertex> normalVertices = new ArrayList<>();
+		for (IVertex vertex : vertices) {
+			if (vertex.getType() == IVertex.TYPE_NORMAL) {
+				normalVertices.add(vertex);
+			}
+		}
+		return normalVertices;
 	}
 
 	private boolean isDirty() {

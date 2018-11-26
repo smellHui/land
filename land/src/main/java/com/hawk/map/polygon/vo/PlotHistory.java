@@ -4,6 +4,8 @@ import com.amap.api.maps.model.LatLng;
 import com.hawk.map.polygon.core.IPolygon;
 import com.hawk.map.polygon.core.IVertex;
 
+import java.util.List;
+
 /**
  * Created on 2018/11/22 10:26
  *
@@ -15,6 +17,7 @@ public class PlotHistory {
 	public static final int TYPE_VERTEX_MOVE = 3;
 	public static final int TYPE_VERTEX_TYPE_SWITCH = 4;
 	public static final int TYPE_POLYGON_CLOSE = 5;
+	public static final int TYPE_POLYGON_SIMPLIFY = 6;
 
 	public final LatLng originPos;
 	public final IVertex target;
@@ -23,8 +26,9 @@ public class PlotHistory {
 	public final int recoverIndex;
 	public final int originVertexType;
 	public final int originPolygonStatus;
+	public List<LatLng> positions;
 
-	public PlotHistory(IVertex target,int recoverIndex, int changeType) {
+	public PlotHistory(IVertex target, int recoverIndex, int changeType) {
 		this.target = target;
 		IPolygon parent = target.getParent();
 		this.focus = parent.getFocusedVertex();
@@ -33,5 +37,8 @@ public class PlotHistory {
 		this.originVertexType = target.getType();
 		this.recoverIndex = recoverIndex;
 		this.changeType = changeType;
+		if (changeType == TYPE_POLYGON_SIMPLIFY) {
+			this.positions = parent.getPositions();
+		}
 	}
 }

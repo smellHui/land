@@ -12,8 +12,6 @@ import com.hawk.map.core.IMapFunctions;
 import com.hawk.map.polygon.core.IVertex;
 import com.hawk.map.polygon.vo.StatusValue;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PlotUtils {
@@ -338,65 +336,5 @@ public class PlotUtils {
 	public static LatLng toLocation(IMapFunctions map, int x, int y) {
 		Point point = new Point(x, y);
 		return map.getProjection().fromScreenLocation(point);
-	}
-
-	public static List<Integer> compress(List<Point> points, double tolerance) {
-		List<Integer> indicesToKeep = new ArrayList<>();
-		if (points == null || points.size() < 3) {
-			for (int i = 0; points != null && i < points.size(); i++) {
-				indicesToKeep.add(i);
-			}
-			return indicesToKeep;
-		}
-
-		int firstPoint = 0;
-		int lastPoint = points.size() - 1;
-
-		//Add the first and last index to the keepers
-		indicesToKeep.add(firstPoint);
-		indicesToKeep.add(lastPoint);
-
-		//The first and the last point cannot be the same
-		while (points.get(firstPoint).equals(points.get(lastPoint))) {
-			lastPoint--;
-		}
-		douglasPeuckerReduction(points, firstPoint, lastPoint, tolerance, indicesToKeep);
-		Collections.sort(indicesToKeep);
-		return indicesToKeep;
-	}
-
-	private static void douglasPeuckerReduction(
-			List<Point> points,
-			int firstPoint,
-			int lastPoint, Double tolerance,
-			List<Integer> pointIndicesToKeep) {
-		double maxDistance = 0;
-		int indexFarthest = 0;
-
-		for (int index = firstPoint; index < lastPoint; index++) {
-			double distance = perpendicularDistance(points.get(firstPoint), points.get(lastPoint), points.get(index));
-			if (distance > maxDistance) {
-				maxDistance = distance;
-				indexFarthest = index;
-			}
-		}
-
-		if (maxDistance > tolerance && indexFarthest != 0) {
-			//Add the largest point that exceeds the tolerance
-			pointIndicesToKeep.add(indexFarthest);
-			douglasPeuckerReduction(points, firstPoint,
-					indexFarthest, tolerance, pointIndicesToKeep);
-			douglasPeuckerReduction(points, indexFarthest,
-					lastPoint, tolerance, pointIndicesToKeep);
-		}
-	}
-
-	private static double perpendicularDistance(Point point1, Point point2, Point Point) {
-		double area = Math.abs(.5 * (point1.x * point2.y + point2.x *
-				Point.y + Point.x * point1.y - point2.x * point1.y - Point.x *
-				point2.y - point1.x * Point.y));
-		double bottom = Math.sqrt(Math.pow(point1.x - point2.x, 2) +
-				Math.pow(point1.y - point2.y, 2));
-		return area / bottom * 2;
 	}
 }

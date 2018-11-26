@@ -439,6 +439,16 @@ public class Vertex implements IVertex {
 		return handle.isVisible();
 	}
 
+	@Override
+	public IVertex clone() {
+		try {
+			return (IVertex) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private class VertexGestureListener extends SimpleGestureListener {
 		private boolean isMoving;
 		private float touchX;

@@ -57,10 +57,10 @@ public interface IPolygon {
 	/**
 	 * 将经纬度集合作为顶点的坐标创建顶点并设置给多边形，创建的顶点会自动插入中间点。
 	 *
-	 * @param points   多边形顶点坐标
+	 * @param positions   多边形顶点坐标
 	 * @param isClosed 多边形是否闭合，如果顶点数小于三，该参数无效
 	 */
-	void setPositions(List<LatLng> points, boolean isClosed);
+	void setPositions(List<LatLng> positions, boolean isClosed);
 
 	/**
 	 * 在两个普通顶点之间插入中间点
@@ -443,11 +443,11 @@ public interface IPolygon {
 	VertexStyle getDefaultVertexStyle();
 
 	/**
-	 * 顶点抽稀。注意，该方法调用后可能会将一个已闭合的多边形变为未闭合状态（抽稀后顶点数小于三）。
+	 * 顶点抽稀。注意，该方法调用后可能会将一个已闭合的多边形变为未闭合状态（抽稀后顶点数小于三），也有可能将其变为自相交状态。
 	 *
 	 * @param tolerance 可忍受的偏差（单位 px），这个值越大，偏差越大，点越少
 	 */
-	void compress(double tolerance);
+	void simplify(double tolerance);
 
 	/**
 	 * 绘制多边形。调用该方法会立即重绘多边形及上面的顶点和把手。

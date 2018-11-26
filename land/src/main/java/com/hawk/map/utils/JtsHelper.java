@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,8 @@ public class JtsHelper {
 		return mInstance;
 	}
 
-	private JtsHelper() { }
+	private JtsHelper() {
+	}
 
 	public boolean isSelfCross(List<Point> points) {
 		if (points.size() < 4) {
@@ -86,4 +88,14 @@ public class JtsHelper {
 	}
 
 
+	public List<Point> simplify(List<Point> points, double tolerance) {
+		Coordinate[] coordinates = convert(points);
+		Geometry geometry = mGeometryFactory.createLineString(coordinates);
+		DouglasPeuckerSimplifier simplifier = new DouglasPeuckerSimplifier(geometry);
+		simplifier.setDistanceTolerance(tolerance);
+		simplifier.setEnsureValid(true);
+		geometry = simplifier.getResultGeometry();
+		coordinates = geometry.getCoordinates();
+		return convert(coordinates);
+	}
 }
