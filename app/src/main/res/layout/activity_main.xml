@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".MainActivity">
+
+	<com.hawk.map.impl.AmapView
+		android:id="@+id/mapView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toTopOf="parent"/>
+
+	<Button
+		android:id="@+id/btnAdd"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="+"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"/>
+
+	<Button
+		android:id="@+id/btnDel"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="-"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/btnAdd"/>
+
+	<Button
+		android:id="@+id/btnRevert"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="⬅"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/btnDel"/>
+
+	<Button
+		android:id="@+id/btnPre"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="&lt;"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/btnRevert"/>
+
+	<Button
+		android:id="@+id/btnNext"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="&gt;"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/btnPre"/>
+
+	<Button
+		android:id="@+id/btnCompress"
+		android:layout_width="44dp"
+		android:layout_height="44dp"
+		android:layout_marginLeft="16dp"
+		android:text="o"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/btnNext"/>
+</android.support.constraint.ConstraintLayout>
